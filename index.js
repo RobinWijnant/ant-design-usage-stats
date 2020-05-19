@@ -2,7 +2,7 @@ const repoHelper = require("./repoHelper");
 const codeAnalyser = require("./codeAnalyser");
 
 const package = "ant-design/ant-design";
-const components = [];
+const components = ["Input"];
 let offsetId;
 
 (async () => {
