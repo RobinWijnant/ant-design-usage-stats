@@ -6,11 +6,23 @@ const createRegex = (components) => new RegExp(`<(${components.join("|")})[^\/>]
 
 const extractComponentProps = (componentString) => {
   // Matches all props with value except last one
-  // "<Component prop='example' last='notInArray" => ["prop='example'"]
+  // "<Component prop='example' last='notInArray'" => ["prop='example'"]
   const propsKeyWithValue = componentString.match(/[a-zA-Z]*=[{'"].+?(?=[a-zA-Z\s]*=[{'"])/gm);
   // Matches last prop with value
-  // "<Component prop='example' last='notInArray" => "last='notInArray'"
+  // "<Component prop='example' last='notInArray'" => "last='notInArray'"
   propsKeyWithValue.push(componentString.match(/(?<==['"}].+?['"}]\s).*['"}]$/));
+
+  // Convert array to object
+  // ["prop='example'", "last='notInArray'"] => {prop: "'example'", last="'notInArray"}
+  return propsKeyWithValue.reduce((accumulator, propKeyWithValue) => {
+    const {
+      groups: { key, value },
+    } = propKeyWithValue.match(/(?<key>[a-zA-Z]+?)=(?<value>.*)/);
+    return {
+      ...accumulator,
+      [key]: value,
+    };
+  }, {});
 };
 
 const analyse = async (repoDir, components) => {
