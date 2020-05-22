@@ -34,8 +34,8 @@ const fetchDependents = async (repoName, offsetId) => {
   };
 };
 
-const cloneRepo = async (name, url) => {
-  const targetDir = path.join(__dirname, ".cache", name);
+const cloneRepo = async (name, url, cacheDir) => {
+  const targetDir = path.join(cacheDir, name);
 
   try {
     await fs.promises.access(targetDir);

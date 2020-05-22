@@ -1,4 +1,6 @@
+const path = require("path");
 const codeAnalyser = require("./codeAnalyser");
+const config = require("../config");
 
 test("extractComponents", () => {
   const fileContent = `(<AutoComplete
@@ -24,7 +26,13 @@ test("extractComponents", () => {
       },
     },
   ];
-  expect(codeAnalyser.extractComponents(["AutoComplete", "Input"], fileContent)).toStrictEqual(
+  expect(codeAnalyser.extractComponents(fileContent, config.components)).toStrictEqual(
     extractedComponents
   );
+});
+
+test("analyse", async () => {
+  const mockFiles = path.join(__dirname, "mock");
+  const report = await codeAnalyser.analyse(mockFiles, config.components);
+  expect(report).toStrictEqual({});
 });

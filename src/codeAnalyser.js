@@ -1,5 +1,6 @@
 const fs = require("fs");
 const glob = require("glob-promise");
+const path = require("path");
 const { jsxToJson } = require("jsx-to-json");
 
 const flattenComponents = (components) => {
@@ -26,7 +27,9 @@ const extractComponents = (fileContent, allowedComponentNames) => {
 
   const componentsJson = extractedJsxFragments
     .map((extractedJsx) => {
+      console.log(extractedJsx);
       const componentsJson = jsxToJson(extractedJsx);
+      console.log(componentsJson);
       const componentsFlattenedJson = componentsJson.children
         ? flattenComponents(componentsJson)
         : componentsJson;
@@ -40,13 +43,15 @@ const extractComponents = (fileContent, allowedComponentNames) => {
 };
 
 const analyse = async (repoDir, allowedComponentNames) => {
-  const filePaths = await glob.promise("**/*.{js,jsx,tsx}", { root: repoDir });
-  return filePaths.map(async (path) => {
-    const fileContent = await fs.promises.readFile(path, { encoding: "utf8" });
+  const filePaths = await glob.promise("**/*.{js,jsx,tsx}", { cwd: repoDir });
+  const analyseFilePromises = filePaths.map(async (filePath) => {
+    const fileContent = await fs.promises.readFile(path.join(repoDir, filePath), {
+      encoding: "utf8",
+    });
     const extractedComponentsJson = extractComponents(fileContent, allowedComponentNames);
-    console.log(extractedComponentsJson);
     return extractedComponentsJson;
   });
+  return Promise.all(analyseFilePromises);
 };
 
 module.exports = { analyse, extractComponents };
