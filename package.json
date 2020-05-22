@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/index.js",
+    "test": "jest --watchAll"
   },
   "repository": {
     "type": "git",
@@ -19,12 +20,18 @@
     "chokidar": "^3.4.0",
     "glob": "^7.1.6",
     "glob-promise": "^3.4.0",
+    "jest": "^26.0.1",
+    "jsx-to-json": "^0.2.3",
     "node-fetch": "^2.6.0",
     "npm-api": "^1.0.0",
     "npm-api-dependents": "^1.0.0",
     "npm-dependants": "^2.1.2",
     "query-string": "^6.12.1",
     "semver": "^7.3.2",
-    "simple-git": "^2.5.0"
+    "simple-git": "^2.5.0",
+    "simplified-jsx-to-json": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.3"
   }
 }
