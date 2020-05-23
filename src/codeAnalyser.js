@@ -1,7 +1,12 @@
 const fs = require("fs");
 const glob = require("glob-promise");
 const path = require("path");
-const { jsxToJson } = require("jsx-to-json");
+const babel = require("@babel/core");
+const json5 = require("json5");
+
+const babelCodeToJson = (babelCode) => {
+  const trimmedJson = babelCode.substring(1, babelCode.length - 2);
+};
 
 const flattenComponents = (components) => {
   const childrenComponents = [];
@@ -18,7 +23,7 @@ const flattenComponents = (components) => {
   return [components, ...childrenComponents];
 };
 
-const extractComponents = (fileContent, allowedComponentNames) => {
+const extractComponents = async (fileContent, allowedComponentNames) => {
   const extractedJsxFragments = fileContent.match(
     /\(\s*[\S]?\s*<[.\S\s]*?[a-zA-Z]>\s*[\S]?\s*\)}*?;/gm
   );
@@ -26,14 +31,16 @@ const extractComponents = (fileContent, allowedComponentNames) => {
   if (!extractedJsxFragments) return [];
 
   const componentsJson = extractedJsxFragments
-    .map((extractedJsx) => {
-      console.log(extractedJsx);
-      const componentsJson = jsxToJson(extractedJsx);
-      console.log(componentsJson);
-      const componentsFlattenedJson = componentsJson.children
-        ? flattenComponents(componentsJson)
-        : componentsJson;
-      return componentsFlattenedJson;
+    .map(async (extractedJsx, index) => {
+      if (index > 0) return [];
+      const { code } = await babel.transformAsync(extractedJsx, {
+        plugins: ["transform-jsx"],
+      });
+      // const parsableJson = babelCodeToJson(code);
+      console.log(code);
+      const jsxJson = JSON.parse('({"kk": () => {}});');
+      const componentFlattenedJson = jsxJson.children ? flattenComponents(jsxJson) : jsxJson;
+      return componentFlattenedJson;
     })
     .flat();
 
@@ -48,7 +55,7 @@ const analyse = async (repoDir, allowedComponentNames) => {
     const fileContent = await fs.promises.readFile(path.join(repoDir, filePath), {
       encoding: "utf8",
     });
-    const extractedComponentsJson = extractComponents(fileContent, allowedComponentNames);
+    const extractedComponentsJson = await extractComponents(fileContent, allowedComponentNames);
     return extractedComponentsJson;
   });
   return Promise.all(analyseFilePromises);

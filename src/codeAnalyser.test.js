@@ -15,7 +15,7 @@ test("extractComponents", () => {
         }}
       />
     </AutoComplete>);`;
-  const extractedComponents = [
+  const expectedComponentsJson = [
     { type: "AutoComplete", props: { className: "search-box-sub" } },
     {
       type: "Input",
@@ -26,13 +26,12 @@ test("extractComponents", () => {
       },
     },
   ];
-  expect(codeAnalyser.extractComponents(fileContent, config.components)).toStrictEqual(
-    extractedComponents
-  );
+  const componentsJson = codeAnalyser.extractComponents(fileContent, config.components);
+  expect(componentsJson).toStrictEqual(expectedComponentsJson);
 });
 
-test("analyse", async () => {
-  const mockFiles = path.join(__dirname, "mock");
-  const report = await codeAnalyser.analyse(mockFiles, config.components);
-  expect(report).toStrictEqual({});
-});
+// test("analyse", async () => {
+//   const mockFiles = path.join(__dirname, "mock");
+//   const report = await codeAnalyser.analyse(mockFiles, config.components);
+//   expect(report).toStrictEqual({});
+// });
